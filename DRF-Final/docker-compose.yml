@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  web:
+    stdin_open: true
+    tty: true
+    image: drf
+    depends_on:
+      - redis
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    links:
+      - redis
+  rq:
+    image: drf
+    command: python manage.py rqworker 
+    volumes:
+      - .:/code
+    links:
+      - redis
+    
+  redis:
+    image: redis:3.2-alpine
+    ports:
+      - "6379:6379"
+    
+    volumes:
+      - redis_data:/data
+volumes:  
+  redis_data:
